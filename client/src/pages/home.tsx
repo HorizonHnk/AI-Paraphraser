@@ -27,9 +27,16 @@ import {
   Github,
   Twitter,
   Linkedin,
-  TrendingDown
+  TrendingDown,
+  Search,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Lightbulb,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
-import type { ParaphraseMode, ParaphraseResponse } from "@shared/schema";
+import type { ParaphraseMode, ParaphraseResponse, PlagiarismCheckResponse, FlaggedPassage } from "@shared/schema";
 
 export default function Home() {
   const [originalText, setOriginalText] = useState("");
@@ -37,6 +44,8 @@ export default function Home() {
   const [selectedMode, setSelectedMode] = useState<ParaphraseMode>("standard");
   const [copied, setCopied] = useState(false);
   const [email, setEmail] = useState("");
+  const [plagiarismResult, setPlagiarismResult] = useState<PlagiarismCheckResponse | null>(null);
+  const [showPlagiarismDetails, setShowPlagiarismDetails] = useState(false);
   const { toast } = useToast();
   
   const originalTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -93,6 +102,28 @@ export default function Home() {
     },
   });
 
+  const plagiarismMutation = useMutation({
+    mutationFn: async (data: { text: string }) => {
+      const response = await apiRequest("POST", "/api/check-plagiarism", data);
+      return await response.json() as PlagiarismCheckResponse;
+    },
+    onSuccess: (data) => {
+      setPlagiarismResult(data);
+      setShowPlagiarismDetails(true);
+      toast({
+        title: "Analysis Complete",
+        description: `Originality Score: ${data.originalityScore}%`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to check plagiarism. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleParaphrase = () => {
     if (!originalText.trim()) {
       toast({
@@ -128,6 +159,20 @@ export default function Home() {
   const handleClear = () => {
     setOriginalText("");
     setParaphrasedText("");
+    setPlagiarismResult(null);
+    setShowPlagiarismDetails(false);
+  };
+
+  const handlePlagiarismCheck = () => {
+    if (!originalText.trim()) {
+      toast({
+        title: "No text entered",
+        description: "Please enter some text to check for plagiarism.",
+        variant: "destructive",
+      });
+      return;
+    }
+    plagiarismMutation.mutate({ text: originalText });
   };
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
@@ -360,12 +405,23 @@ export default function Home() {
                   <Sparkles className="w-4 h-4" />
                   Paraphrase
                 </Button>
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  onClick={handlePlagiarismCheck}
+                  disabled={!originalText.trim() || plagiarismMutation.isPending}
+                  className="gap-2"
+                  data-testid="button-plagiarism-check"
+                >
+                  <Search className="w-4 h-4" />
+                  {plagiarismMutation.isPending ? "Checking..." : "Check Plagiarism"}
+                </Button>
                 {(originalText || paraphrasedText) && (
                   <Button
                     variant="outline"
                     size="lg"
                     onClick={handleClear}
-                    disabled={paraphraseMutation.isPending}
+                    disabled={paraphraseMutation.isPending || plagiarismMutation.isPending}
                     data-testid="button-clear"
                   >
                     Clear All
@@ -394,6 +450,141 @@ export default function Home() {
                 </Button>
               )}
             </div>
+
+            {/* Plagiarism Check Results */}
+            {plagiarismResult && (
+              <div className="mt-6 border rounded-md overflow-hidden" data-testid="card-plagiarism-results">
+                <div 
+                  className="p-4 bg-card cursor-pointer flex items-center justify-between"
+                  onClick={() => setShowPlagiarismDetails(!showPlagiarismDetails)}
+                  data-testid="button-toggle-plagiarism-details"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      {plagiarismResult.riskLevel === 'low' ? (
+                        <CheckCircle className="w-5 h-5 text-green-500" />
+                      ) : plagiarismResult.riskLevel === 'medium' ? (
+                        <AlertTriangle className="w-5 h-5 text-yellow-500" />
+                      ) : (
+                        <XCircle className="w-5 h-5 text-red-500" />
+                      )}
+                      <span className="font-semibold">Plagiarism Analysis</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Badge variant={plagiarismResult.riskLevel === 'low' ? 'default' : plagiarismResult.riskLevel === 'medium' ? 'secondary' : 'destructive'}>
+                        {plagiarismResult.originalityScore}% Original
+                      </Badge>
+                      <Badge variant="outline">
+                        {plagiarismResult.aiContentProbability}% AI Content
+                      </Badge>
+                    </div>
+                  </div>
+                  {showPlagiarismDetails ? (
+                    <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                  )}
+                </div>
+                
+                {showPlagiarismDetails && (
+                  <div className="p-4 border-t space-y-4">
+                    {/* Summary */}
+                    <div>
+                      <h4 className="text-sm font-medium mb-2">Summary</h4>
+                      <p className="text-sm text-muted-foreground">{plagiarismResult.summary}</p>
+                    </div>
+
+                    {/* Originality & AI Content Scores */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="p-3 border rounded-md">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">Originality Score</span>
+                          <span className={`text-sm font-semibold ${
+                            plagiarismResult.originalityScore >= 70 ? 'text-green-600 dark:text-green-400' :
+                            plagiarismResult.originalityScore >= 40 ? 'text-yellow-600 dark:text-yellow-400' :
+                            'text-red-600 dark:text-red-400'
+                          }`}>
+                            {plagiarismResult.originalityScore}%
+                          </span>
+                        </div>
+                        <Progress value={plagiarismResult.originalityScore} className="h-2" />
+                      </div>
+                      <div className="p-3 border rounded-md">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">AI Content Probability</span>
+                          <span className={`text-sm font-semibold ${
+                            plagiarismResult.aiContentProbability <= 30 ? 'text-green-600 dark:text-green-400' :
+                            plagiarismResult.aiContentProbability <= 60 ? 'text-yellow-600 dark:text-yellow-400' :
+                            'text-red-600 dark:text-red-400'
+                          }`}>
+                            {plagiarismResult.aiContentProbability}%
+                          </span>
+                        </div>
+                        <Progress value={plagiarismResult.aiContentProbability} className="h-2" />
+                      </div>
+                    </div>
+
+                    {/* Flagged Passages */}
+                    {plagiarismResult.flaggedPassages.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                          Flagged Passages ({plagiarismResult.flaggedPassages.length})
+                        </h4>
+                        <div className="space-y-2">
+                          {plagiarismResult.flaggedPassages.map((passage, index) => (
+                            <div 
+                              key={index} 
+                              className={`p-3 rounded-md border-l-4 ${
+                                passage.severity === 'high' ? 'border-l-red-500 bg-red-50 dark:bg-red-950/30' :
+                                passage.severity === 'medium' ? 'border-l-yellow-500 bg-yellow-50 dark:bg-yellow-950/30' :
+                                'border-l-blue-500 bg-blue-50 dark:bg-blue-950/30'
+                              }`}
+                              data-testid={`flagged-passage-${index}`}
+                            >
+                              <p className="text-sm font-medium mb-1 italic">"{passage.text}"</p>
+                              <p className="text-xs text-muted-foreground">{passage.reason}</p>
+                              <Badge 
+                                variant="outline" 
+                                className={`mt-2 text-xs ${
+                                  passage.severity === 'high' ? 'border-red-500 text-red-600' :
+                                  passage.severity === 'medium' ? 'border-yellow-500 text-yellow-600' :
+                                  'border-blue-500 text-blue-600'
+                                }`}
+                              >
+                                {passage.severity.toUpperCase()}
+                              </Badge>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Recommendations */}
+                    {plagiarismResult.recommendations.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+                          <Lightbulb className="w-4 h-4 text-primary" />
+                          Recommendations
+                        </h4>
+                        <ul className="space-y-2">
+                          {plagiarismResult.recommendations.map((rec, index) => (
+                            <li 
+                              key={index} 
+                              className="flex items-start gap-2 text-sm text-muted-foreground"
+                              data-testid={`recommendation-${index}`}
+                            >
+                              <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                              {rec}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </Card>
         </div>
       </section>

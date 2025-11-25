@@ -85,3 +85,104 @@ export async function paraphraseText(text: string, mode: ParaphraseMode): Promis
 export function countWords(text: string): number {
   return text.trim() ? text.trim().split(/\s+/).length : 0;
 }
+
+export interface PlagiarismAnalysis {
+  originalityScore: number;
+  riskLevel: "low" | "medium" | "high";
+  summary: string;
+  flaggedPassages: Array<{
+    text: string;
+    reason: string;
+    severity: "low" | "medium" | "high";
+  }>;
+  recommendations: string[];
+  aiContentProbability: number;
+}
+
+export async function checkPlagiarism(text: string): Promise<PlagiarismAnalysis> {
+  try {
+    const systemPrompt = `You are an expert plagiarism and content originality analyzer. Analyze the provided text and return a detailed JSON assessment.
+
+Your analysis should evaluate:
+1. **Originality**: Look for commonly used phrases, clichés, generic statements, and content that appears templated or commonly found online.
+2. **AI-Generated Content Detection**: Identify patterns typical of AI-written text such as:
+   - Overly formal or robotic language
+   - Repetitive sentence structures
+   - Lack of personal voice or unique perspective
+   - Generic transitional phrases
+   - Perfect grammar with no stylistic quirks
+3. **Potential Copied Content**: Flag any passages that seem like they could be directly copied or closely paraphrased from common sources.
+
+Return ONLY a valid JSON object with this exact structure (no markdown, no code blocks):
+{
+  "originalityScore": <number 0-100, where 100 is completely original>,
+  "riskLevel": "<'low' | 'medium' | 'high'>",
+  "summary": "<brief 1-2 sentence summary of findings>",
+  "flaggedPassages": [
+    {
+      "text": "<exact text passage that is flagged>",
+      "reason": "<why this passage is flagged>",
+      "severity": "<'low' | 'medium' | 'high'>"
+    }
+  ],
+  "recommendations": ["<actionable recommendation 1>", "<recommendation 2>"],
+  "aiContentProbability": <number 0-100, likelihood this is AI-generated>
+}
+
+Risk level guidelines:
+- "low": originalityScore >= 70, minimal concerns
+- "medium": originalityScore 40-69, some issues detected
+- "high": originalityScore < 40, significant concerns
+
+Be thorough but fair in your analysis. Not all common phrases indicate plagiarism.`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-5",
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+        {
+          role: "user",
+          content: `Analyze this text for plagiarism and originality:\n\n${text}`
+        }
+      ],
+      max_completion_tokens: 4096,
+    });
+
+    const content = response.choices[0]?.message?.content?.trim();
+    
+    if (!content) {
+      throw new Error("No analysis returned from AI");
+    }
+
+    // Clean up potential JSON formatting issues
+    let cleanedContent = content;
+    if (cleanedContent.startsWith("```json")) {
+      cleanedContent = cleanedContent.slice(7);
+    }
+    if (cleanedContent.startsWith("```")) {
+      cleanedContent = cleanedContent.slice(3);
+    }
+    if (cleanedContent.endsWith("```")) {
+      cleanedContent = cleanedContent.slice(0, -3);
+    }
+    cleanedContent = cleanedContent.trim();
+
+    const analysis = JSON.parse(cleanedContent) as PlagiarismAnalysis;
+    
+    // Validate and normalize the response
+    return {
+      originalityScore: Math.max(0, Math.min(100, analysis.originalityScore || 50)),
+      riskLevel: ["low", "medium", "high"].includes(analysis.riskLevel) ? analysis.riskLevel : "medium",
+      summary: analysis.summary || "Analysis complete.",
+      flaggedPassages: Array.isArray(analysis.flaggedPassages) ? analysis.flaggedPassages : [],
+      recommendations: Array.isArray(analysis.recommendations) ? analysis.recommendations : [],
+      aiContentProbability: Math.max(0, Math.min(100, analysis.aiContentProbability || 50)),
+    };
+  } catch (error: any) {
+    console.error("Error checking plagiarism:", error);
+    throw new Error(error.message || "Failed to analyze text for plagiarism");
+  }
+}
