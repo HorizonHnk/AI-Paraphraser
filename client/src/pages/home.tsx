@@ -26,7 +26,6 @@ import {
   Mail,
   Github,
   Twitter,
-  Linkedin,
   TrendingDown,
   Search,
   AlertTriangle,
@@ -36,6 +35,7 @@ import {
   ChevronDown,
   ChevronUp
 } from "lucide-react";
+import { SiDiscord, SiTiktok, SiYoutube, SiInstagram } from "react-icons/si";
 import type { ParaphraseMode, ParaphraseResponse, PlagiarismCheckResponse, FlaggedPassage } from "@shared/schema";
 
 export default function Home() {
@@ -815,20 +815,40 @@ export default function Home() {
             </div>
             <div>
               <h3 className="font-semibold mb-4">Connect</h3>
-              <div className="flex gap-3">
-                <Button variant="ghost" size="icon" asChild data-testid="link-twitter">
-                  <a href="#" aria-label="Twitter">
-                    <Twitter className="w-5 h-5" />
-                  </a>
-                </Button>
+              <div className="flex flex-wrap gap-2">
                 <Button variant="ghost" size="icon" asChild data-testid="link-github">
-                  <a href="#" aria-label="GitHub">
+                  <a href="https://github.com/HorizonHnk/AI-Paraphraser.git" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
                     <Github className="w-5 h-5" />
                   </a>
                 </Button>
-                <Button variant="ghost" size="icon" asChild data-testid="link-linkedin">
-                  <a href="#" aria-label="LinkedIn">
-                    <Linkedin className="w-5 h-5" />
+                <Button variant="ghost" size="icon" asChild data-testid="link-discord">
+                  <a href="https://discord.com/users/hnk0422_76455" target="_blank" rel="noopener noreferrer" aria-label="Discord">
+                    <SiDiscord className="w-5 h-5" />
+                  </a>
+                </Button>
+                <Button variant="ghost" size="icon" asChild data-testid="link-twitter">
+                  <a href="https://twitter.com/HnkHorizon" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+                    <Twitter className="w-5 h-5" />
+                  </a>
+                </Button>
+                <Button variant="ghost" size="icon" asChild data-testid="link-tiktok">
+                  <a href="https://tiktok.com/@codingfever" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+                    <SiTiktok className="w-5 h-5" />
+                  </a>
+                </Button>
+                <Button variant="ghost" size="icon" asChild data-testid="link-youtube">
+                  <a href="https://youtube.com/@HNK2005" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+                    <SiYoutube className="w-5 h-5" />
+                  </a>
+                </Button>
+                <Button variant="ghost" size="icon" asChild data-testid="link-instagram">
+                  <a href="https://instagram.com/hhnk.3693" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                    <SiInstagram className="w-5 h-5" />
+                  </a>
+                </Button>
+                <Button variant="ghost" size="icon" asChild data-testid="link-email">
+                  <a href="mailto:hhnk3693@gmail.com" aria-label="Email">
+                    <Mail className="w-5 h-5" />
                   </a>
                 </Button>
               </div>
