@@ -35,6 +35,7 @@ Preferred communication style: Simple, everyday language.
 - Copy-to-clipboard functionality
 - Synchronized scrolling between text panels
 - Responsive layout (desktop: side-by-side, mobile: stacked)
+- AI-powered plagiarism checker with originality scoring and AI content detection
 
 ### Backend Architecture
 
@@ -46,8 +47,11 @@ Preferred communication style: Simple, everyday language.
 
 **API Structure:**
 - RESTful API endpoint: `POST /api/paraphrase`
-- Request validation using Zod schemas
-- Response includes original text, paraphrased text, mode, and statistics (word/character counts)
+  - Request validation using Zod schemas
+  - Response includes original text, paraphrased text, mode, and statistics (word/character counts)
+- RESTful API endpoint: `POST /api/check-plagiarism`
+  - Analyzes text for originality, AI-generated content detection, and flagged passages
+  - Returns originality score, AI content probability, risk level, flagged passages with severity, and recommendations
 
 **Development vs Production:**
 - Development: Vite dev server with HMR (Hot Module Replacement)
