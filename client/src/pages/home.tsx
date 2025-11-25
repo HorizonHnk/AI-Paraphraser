@@ -241,9 +241,6 @@ export default function Home() {
               <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" data-testid="link-pricing">
                 Pricing
               </a>
-              <a href="#about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" data-testid="link-about">
-                About
-              </a>
             </nav>
             <ThemeToggle />
           </div>
