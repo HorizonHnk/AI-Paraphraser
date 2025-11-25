@@ -267,8 +267,8 @@ export default function Home() {
       <section id="tool" className="py-8 md:py-12">
         <div className="max-w-7xl mx-auto px-6">
           <Card className="p-6 md:p-8" data-testid="card-tool">
-            {/* Mode Selector - Sticky Control Bar */}
-            <div className="sticky top-20 bg-card/95 backdrop-blur-sm -mx-6 md:-mx-8 px-6 md:px-8 py-4 mb-6 border-b z-40">
+            {/* Mode Selector */}
+            <div className="mb-6">
               <label className="text-sm font-medium mb-3 block" data-testid="label-mode-selector">
                 Paraphrasing Mode
               </label>
