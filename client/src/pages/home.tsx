@@ -484,9 +484,6 @@ export default function Home() {
               <a href="#how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" data-testid="link-how-it-works">
                 How It Works
               </a>
-              <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" data-testid="link-pricing">
-                Pricing
-              </a>
             </nav>
             <Button 
               variant="ghost" 
@@ -1316,69 +1313,6 @@ export default function Home() {
                 Receive naturally rewritten text that maintains your original meaning.
               </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section id="pricing" className="py-16 md:py-24 bg-muted/30">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-semibold mb-3" data-testid="text-pricing-title">
-              Simple, Transparent Pricing
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto" data-testid="text-pricing-subtitle">
-              Start free and upgrade as you grow
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="p-6 hover-elevate" data-testid="card-pricing-free">
-              <h3 className="text-lg font-semibold mb-2">Free</h3>
-              <p className="text-3xl font-bold mb-4">$0<span className="text-sm font-normal text-muted-foreground">/month</span></p>
-              <ul className="space-y-2 mb-6 text-sm">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  5,000 words per day
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  All paraphrasing modes
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  Grammar & plagiarism check
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  Export to TXT/PDF
-                </li>
-              </ul>
-              <Button className="w-full" variant="outline">Current Plan</Button>
-            </Card>
-            <Card className="p-6 border-primary hover-elevate" data-testid="card-pricing-pro">
-              <Badge className="mb-2">Popular</Badge>
-              <h3 className="text-lg font-semibold mb-2">Pro</h3>
-              <p className="text-3xl font-bold mb-4">$9.99<span className="text-sm font-normal text-muted-foreground">/month</span></p>
-              <ul className="space-y-2 mb-6 text-sm">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  Unlimited words
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  Priority processing
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  Batch processing (up to 50)
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  API access
-                </li>
-              </ul>
-              <Button className="w-full">Upgrade to Pro</Button>
-            </Card>
           </div>
         </div>
       </section>
