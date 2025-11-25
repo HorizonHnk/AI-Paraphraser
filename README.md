@@ -2,7 +2,7 @@
 
 > Transform AI-generated text into natural, human-like content that bypasses AI detection tools.
 
-[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://ai-paraphraser.replit.app)
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://ai-text-wizard-henockhnk092.replit.app)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-green)](https://nodejs.org)
 
@@ -311,15 +311,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-**Horizon Hnk**
+**HNK (Horizon Hnk)**
 
 - GitHub: [@HorizonHnk](https://github.com/HorizonHnk)
 - Email: hhnk3693@gmail.com
-- Discord: [Join Server](https://discord.gg/CvSdnQVczk)
-- Twitter: [@AiHorizon85134](https://x.com/AiHorizon85134)
-- YouTube: [@Horizon-Hnk](https://www.youtube.com/@Horizon-Hnk)
-- TikTok: [@horizon.hnk](https://www.tiktok.com/@horizon.hnk)
-- Instagram: [@horizon.hnk](https://www.instagram.com/horizon.hnk)
+- Discord: hnk0422_76455
+- Twitter: [@HnkHorizon](https://x.com/HnkHorizon)
+- YouTube: [@HNK2005](https://www.youtube.com/@HNK2005)
+- TikTok: [@codingfever](https://www.tiktok.com/@codingfever)
+- Instagram: [@hhnk.3693](https://www.instagram.com/hhnk.3693)
 
 ---
 
@@ -335,8 +335,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-**[Live Demo](https://ai-paraphraser.replit.app)** · **[Report Bug](https://github.com/HorizonHnk/AI-Paraphraser/issues)** · **[Request Feature](https://github.com/HorizonHnk/AI-Paraphraser/issues)**
+**[Live Demo](https://ai-text-wizard-henockhnk092.replit.app)** · **[Report Bug](https://github.com/HorizonHnk/AI-Paraphraser/issues)** · **[Request Feature](https://github.com/HorizonHnk/AI-Paraphraser/issues)**
 
-Made with passion by Horizon Hnk
+Made with passion by HNK
 
 </div>
