@@ -43,7 +43,6 @@ export default function Home() {
   const [paraphrasedText, setParaphrasedText] = useState("");
   const [selectedMode, setSelectedMode] = useState<ParaphraseMode>("standard");
   const [copied, setCopied] = useState(false);
-  const [email, setEmail] = useState("");
   const [plagiarismResult, setPlagiarismResult] = useState<PlagiarismCheckResponse | null>(null);
   const [showPlagiarismDetails, setShowPlagiarismDetails] = useState(false);
   const [headerVisible, setHeaderVisible] = useState(true);
@@ -195,17 +194,6 @@ export default function Home() {
       return;
     }
     plagiarismMutation.mutate({ text: originalText });
-  };
-
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      toast({
-        title: "Thanks for subscribing!",
-        description: "We'll keep you updated with the latest features.",
-      });
-      setEmail("");
-    }
   };
 
   const originalWordCount = originalText?.trim() ? originalText.trim().split(/\s+/).length : 0;
@@ -731,32 +719,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Newsletter Section */}
-      <section className="py-16 bg-muted/30">
-        <div className="max-w-3xl mx-auto px-6 text-center">
-          <h2 className="text-2xl font-semibold mb-3" data-testid="text-newsletter-title">
-            Stay Updated
-          </h2>
-          <p className="text-muted-foreground mb-6">
-            Get notified about new features and improvements to our AI paraphrasing tool.
-          </p>
-          <form onSubmit={handleNewsletterSubmit} className="flex gap-3 max-w-md mx-auto">
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              data-testid="input-newsletter-email"
-            />
-            <Button type="submit" data-testid="button-newsletter-submit">
-              <Mail className="w-4 h-4 mr-2" />
-              Subscribe
-            </Button>
-          </form>
         </div>
       </section>
 
