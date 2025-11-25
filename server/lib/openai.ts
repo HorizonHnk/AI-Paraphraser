@@ -99,6 +99,90 @@ export interface PlagiarismAnalysis {
   aiContentProbability: number;
 }
 
+// Grammar check interface
+export interface GrammarAnalysis {
+  issues: Array<{
+    text: string;
+    suggestion: string;
+    type: "spelling" | "grammar" | "punctuation" | "style";
+    position: { start: number; end: number };
+  }>;
+  correctedText: string;
+  score: number;
+}
+
+export async function checkGrammar(text: string): Promise<GrammarAnalysis> {
+  try {
+    const systemPrompt = `You are an expert grammar, spelling, and style checker. Analyze the provided text and return a detailed JSON assessment.
+
+Your analysis should:
+1. Identify all grammar errors
+2. Find spelling mistakes
+3. Detect punctuation issues
+4. Suggest style improvements
+
+Return ONLY a valid JSON object with this exact structure (no markdown, no code blocks):
+{
+  "issues": [
+    {
+      "text": "<the problematic text>",
+      "suggestion": "<the correction>",
+      "type": "<'spelling' | 'grammar' | 'punctuation' | 'style'>",
+      "position": { "start": <character index>, "end": <character index> }
+    }
+  ],
+  "correctedText": "<the full text with all corrections applied>",
+  "score": <number 0-100, where 100 is perfect grammar>
+}
+
+Be thorough but practical. Focus on actual errors, not stylistic preferences unless they significantly impact readability.`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-5",
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+        {
+          role: "user",
+          content: `Check the grammar and spelling in this text:\n\n${text}`
+        }
+      ],
+      max_completion_tokens: 4096,
+    });
+
+    const content = response.choices[0]?.message?.content?.trim();
+    
+    if (!content) {
+      throw new Error("No analysis returned from AI");
+    }
+
+    let cleanedContent = content;
+    if (cleanedContent.startsWith("```json")) {
+      cleanedContent = cleanedContent.slice(7);
+    }
+    if (cleanedContent.startsWith("```")) {
+      cleanedContent = cleanedContent.slice(3);
+    }
+    if (cleanedContent.endsWith("```")) {
+      cleanedContent = cleanedContent.slice(0, -3);
+    }
+    cleanedContent = cleanedContent.trim();
+
+    const analysis = JSON.parse(cleanedContent) as GrammarAnalysis;
+    
+    return {
+      issues: Array.isArray(analysis.issues) ? analysis.issues : [],
+      correctedText: analysis.correctedText || text,
+      score: Math.max(0, Math.min(100, analysis.score || 100)),
+    };
+  } catch (error: any) {
+    console.error("Error checking grammar:", error);
+    throw new Error(error.message || "Failed to check grammar");
+  }
+}
+
 export async function checkPlagiarism(text: string): Promise<PlagiarismAnalysis> {
   try {
     const systemPrompt = `You are an expert plagiarism and content originality analyzer. Analyze the provided text and return a detailed JSON assessment.
