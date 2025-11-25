@@ -46,11 +46,33 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [plagiarismResult, setPlagiarismResult] = useState<PlagiarismCheckResponse | null>(null);
   const [showPlagiarismDetails, setShowPlagiarismDetails] = useState(false);
+  const [headerVisible, setHeaderVisible] = useState(true);
   const { toast } = useToast();
   
   const originalTextareaRef = useRef<HTMLTextAreaElement>(null);
   const paraphrasedTextareaRef = useRef<HTMLTextAreaElement>(null);
   const isSyncingScroll = useRef(false);
+  const lastScrollY = useRef(0);
+
+  // Hide header on scroll down, show on scroll up
+  useEffect(() => {
+    const handleWindowScroll = () => {
+      const currentScrollY = window.scrollY;
+      const scrollingDown = currentScrollY > lastScrollY.current;
+      const scrolledPastThreshold = currentScrollY > 80;
+      
+      if (scrollingDown && scrolledPastThreshold) {
+        setHeaderVisible(false);
+      } else {
+        setHeaderVisible(true);
+      }
+      
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleWindowScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleWindowScroll);
+  }, []);
 
   const modes = [
     { id: "standard" as const, label: "Standard", icon: FileText, description: "Balanced rewriting" },
@@ -208,9 +230,13 @@ export default function Home() {
                     'text-red-600 dark:text-red-400';
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b sticky top-0 bg-background/95 backdrop-blur-sm z-50">
+    <div className="min-h-screen bg-background pt-16">
+      {/* Header - hides on scroll down, shows on scroll up */}
+      <header 
+        className={`border-b fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-sm z-50 transition-transform duration-300 ${
+          headerVisible ? 'translate-y-0' : '-translate-y-full'
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-primary" data-testid="icon-logo" />
